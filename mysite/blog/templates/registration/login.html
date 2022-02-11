@@ -10,7 +10,7 @@
         <p>Your username and password didn't match! Please try again.</p>
     {% endif %}
 
-    <form action="{% url 'blog:login' %}" metho="POST">
+    <form action="{% url 'blog:login' %}" method="POST">
     {% csrf_token %}
         {% forms.as_p %}
         <input type="submit" class="btb btn-primary" name="" value="Login">
