@@ -5,12 +5,11 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.generic import (TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView)
-from blog.forms import PostForm, CommentForm
-
+from blog.forms import PostForm, CommentForm, InputForm
 # Create your views here.
 
 class AboutView(TemplateView):
-    template_view = 'about.html'
+    template_name = 'blog/about.html'
 
 class PostListView(ListView):
     model = Post
@@ -23,28 +22,27 @@ class PostDetailView(DetailView):
 
 class CreatePostView(LoginRequiredMixin, CreateView):
     login_url = 'login/'
-    redirect_field_name = 'blog/post_detail/'
+    redirect_field_name = 'blog/post_detail.html'
     form_class = PostForm
     model = Post
 
 class PostUpdateView(LoginRequiredMixin,UpdateView):
     login_url = 'login/'
-    redirect_field_name = 'blog/post_detail/'
+    redirect_field_name = 'blog/post_detail.html'
     form_class = PostForm
     model = Post
 
-class PostDeleteView(LoginRequiredMixin,UpdateView):
-    model = Post
-    success_url = reverse_lazy('post_list')
-
-class DraftListView(LoginRequiredMixin,UpdateView):
+class DraftListView(LoginRequiredMixin,ListView):
     login_url = 'login/'
-    redirect_field_name = 'blog/post_list.html'
+    redirect_field_name = 'blog/post_draft_list.html'
     model = Post
 
     def get_queryset(self):
         return Post.objects.filter(published_date__isnull=True).order_by('create_date')
 
+class PostDeleteView(LoginRequiredMixin, DeleteView):
+    model = Post
+    success_url = reverse_lazy('post_list')
 
 #####################
 #####################
@@ -52,10 +50,8 @@ class DraftListView(LoginRequiredMixin,UpdateView):
 @login_required
 def post_publish(request,pk):
     post = get_object_or_404(Post,pk=pk)
-    post.publish
+    post.publish()
     return redirect('post_detail',pk=pk)
-
-
 
 @login_required
 def add_comment_to_post(request,pk):
@@ -84,3 +80,8 @@ def comment_remove(request, pk):
     post_pk = comment.post.pk
     comment.delete()
     return redirect('post_detail', pk=post_pk)
+
+def home_view(request):
+    context ={}
+    context['form']= InputForm()
+    return render(request, "post_list.html", context)

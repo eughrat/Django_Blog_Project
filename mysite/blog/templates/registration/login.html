@@ -10,11 +10,11 @@
         <p>Your username and password didn't match! Please try again.</p>
     {% endif %}
 
-    <form action="{% url 'blog:login' %}" method="POST">
-    {% csrf_token %}
-        {% forms.as_p %}
-        <input type="submit" class="btb btn-primary" name="" value="Login">
-        <input type="hidden" name="hidden" value="{{next}}">
+    <form action="{% url 'login' %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="btn btn-primary" name="" value="Login"/>
+        <input type="hidden" name="hidden" value="{{next}}"/>
     </form>
 
 </div>
